@@ -16,6 +16,8 @@ type Inputs = {
   custom_bg_start: string | null;
   custom_bg_end: string | null;
   gradient_direction: "0deg" | "45deg" | "90deg" | "135deg" | "180deg" | "270deg" | null;
+  title_font: "default" | "NotoSansSC" | "NotoSerifSC" | "Montserrat" | "Poppins" | "PlayfairDisplay" | "Roboto" | null;
+  body_font: "default" | "NotoSansSC" | "NotoSerifSC" | "Montserrat" | "Poppins" | "PlayfairDisplay" | "Roboto" | null;
   scale: number | null;
   enable_math: boolean | null;
   enable_diagram: boolean | null;
@@ -27,6 +29,90 @@ type Outputs = {
   image_height: number;
 };
 //#endregion
+
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+// Get project root directory (workspace root)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const PROJECT_ROOT = join(__dirname, "../..");
+
+// Font configuration mapping
+const FONT_FILES: Record<string, { regular: string; bold: string }> = {
+  NotoSansSC: {
+    regular: "NotoSansSC-Regular.ttf",
+    bold: "NotoSansSC-Bold.ttf",
+  },
+  NotoSerifSC: {
+    regular: "NotoSerifSC-Regular.ttf",
+    bold: "NotoSerifSC-Bold.ttf",
+  },
+  Montserrat: {
+    regular: "Montserrat-Regular.ttf",
+    bold: "Montserrat-Bold.ttf",
+  },
+  Poppins: {
+    regular: "Poppins-Regular.ttf",
+    bold: "Poppins-Bold.ttf",
+  },
+  PlayfairDisplay: {
+    regular: "PlayfairDisplay-Regular.ttf",
+    bold: "PlayfairDisplay-Bold.ttf",
+  },
+  Roboto: {
+    regular: "Roboto-Regular.ttf",
+    bold: "Roboto-Bold.ttf",
+  },
+};
+
+// Load font as base64 data URL
+async function loadFontAsBase64(fontName: string): Promise<{ regular: string; bold: string } | null> {
+  if (!FONT_FILES[fontName]) {
+    return null;
+  }
+
+  const fontDir = join(PROJECT_ROOT, "fonts");
+  const files = FONT_FILES[fontName];
+
+  try {
+    const regularPath = join(fontDir, files.regular);
+    const boldPath = join(fontDir, files.bold);
+
+    const [regularData, boldData] = await Promise.all([
+      readFile(regularPath),
+      readFile(boldPath),
+    ]);
+
+    return {
+      regular: `data:font/ttf;base64,${regularData.toString("base64")}`,
+      bold: `data:font/ttf;base64,${boldData.toString("base64")}`,
+    };
+  } catch (error) {
+    console.warn(`Failed to load font ${fontName}:`, error);
+    return null;
+  }
+}
+
+// Generate @font-face CSS rules
+function generateFontFaceCSS(fontName: string, fontData: { regular: string; bold: string }): string {
+  return `
+    @font-face {
+      font-family: '${fontName}';
+      src: url('${fontData.regular}') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+    }
+    @font-face {
+      font-family: '${fontName}';
+      src: url('${fontData.bold}') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: block;
+    }
+  `;
+}
 
 // Background gradient presets
 const BACKGROUND_PRESETS: Record<string, string> = {
@@ -378,6 +464,10 @@ function generateHTML(
     enableCard: boolean;
     enableMath: boolean;
     enableDiagram: boolean;
+    titleFontCSS: string;
+    bodyFontCSS: string;
+    titleFontFamily: string;
+    bodyFontFamily: string;
   }
 ): string {
   const preprocessed = preprocessMarkdown(markdown, options.enableCard);
@@ -396,6 +486,14 @@ function generateHTML(
   // Generate inline assets
   const inlineAssets: string[] = [];
   const inlineScripts: string[] = [];
+
+  // Add custom font CSS
+  if (options.titleFontCSS) {
+    inlineAssets.push(`<style>${options.titleFontCSS}</style>`);
+  }
+  if (options.bodyFontCSS && options.bodyFontCSS !== options.titleFontCSS) {
+    inlineAssets.push(`<style>${options.bodyFontCSS}</style>`);
+  }
 
   if (options.enableMath) {
     // Inline KaTeX CSS
@@ -494,6 +592,23 @@ function generateHTML(
   ${inlineScripts.join('\n  ')}
   <style>
     ${FULL_STYLES}
+
+    /* Custom font overrides */
+    .poster-content h1,
+    .poster-content h2,
+    .poster-content h3,
+    .poster-content h4,
+    .poster-content h5,
+    .poster-content h6 {
+      font-family: ${options.titleFontFamily};
+    }
+
+    .poster-content,
+    .poster-content p,
+    .poster-content li,
+    .poster-content blockquote {
+      font-family: ${options.bodyFontFamily};
+    }
   </style>
 </head>
 <body>
@@ -566,6 +681,38 @@ export default async function (
   // Calculate target height
   const targetHeight = calculateHeight(exportMode, width);
 
+  // Load custom fonts - default to NotoSansSC for reliable Chinese rendering
+  const DEFAULT_FONT = "NotoSansSC";
+  const titleFont = params.title_font || DEFAULT_FONT;
+  const bodyFont = params.body_font || DEFAULT_FONT;
+
+  const fallbackFontFamily = "sans-serif";
+
+  let titleFontCSS = "";
+  let bodyFontCSS = "";
+  let titleFontFamily = fallbackFontFamily;
+  let bodyFontFamily = fallbackFontFamily;
+
+  // Load title font
+  const titleFontData = await loadFontAsBase64(titleFont);
+  if (titleFontData) {
+    titleFontCSS = generateFontFaceCSS(titleFont, titleFontData);
+    titleFontFamily = `'${titleFont}', ${fallbackFontFamily}`;
+  }
+
+  // Load body font
+  if (bodyFont === titleFont && titleFontCSS) {
+    // Reuse title font CSS
+    bodyFontCSS = titleFontCSS;
+    bodyFontFamily = titleFontFamily;
+  } else {
+    const bodyFontData = await loadFontAsBase64(bodyFont);
+    if (bodyFontData) {
+      bodyFontCSS = generateFontFaceCSS(bodyFont, bodyFontData);
+      bodyFontFamily = `'${bodyFont}', ${fallbackFontFamily}`;
+    }
+  }
+
   // Generate HTML
   const htmlContent = generateHTML(markdownContent, {
     width,
@@ -576,6 +723,10 @@ export default async function (
     enableCard,
     enableMath,
     enableDiagram,
+    titleFontCSS,
+    bodyFontCSS,
+    titleFontFamily,
+    bodyFontFamily,
   });
 
   // Launch browser and render
@@ -591,12 +742,15 @@ export default async function (
       ],
     });
 
-    const page: Page = await browser.newPage();
+    // Create page with high device pixel ratio for crisp rendering
+    const page: Page = await browser.newPage({
+      deviceScaleFactor: scale,
+    });
 
     // Set viewport size
     await page.setViewportSize({
       width: width,
-      height: 600, // Initial height, will adjust after measuring
+      height: 800,
     });
 
     // Set page content
@@ -623,19 +777,18 @@ export default async function (
       throw new Error("Cannot get element bounding box");
     }
 
-    // Take screenshot with scale factor
+    // Take high-resolution screenshot
     await element.screenshot({
       path: outputPath,
       type: "png",
-      scale: scale === 3 ? "device" : "css",
     });
 
     await page.close();
 
     return {
       image_path: outputPath,
-      image_width: Math.round(boundingBox.width),
-      image_height: Math.round(boundingBox.height),
+      image_width: Math.round(boundingBox.width * scale),
+      image_height: Math.round(boundingBox.height * scale),
     };
   } finally {
     if (browser) {

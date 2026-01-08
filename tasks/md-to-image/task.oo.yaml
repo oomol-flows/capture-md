@@ -108,6 +108,39 @@ inputs_def:
     value: null
     nullable: true
 
+  - group: Font Options
+    collapsed: true
+
+  - handle: title_font
+    description: "Font for titles/headers (Chinese fonts recommended for Chinese content)"
+    json_schema:
+      type: string
+      enum:
+        - default
+        - NotoSansSC
+        - NotoSerifSC
+        - Montserrat
+        - Poppins
+        - PlayfairDisplay
+        - Roboto
+    value: null
+    nullable: true
+
+  - handle: body_font
+    description: "Font for body text"
+    json_schema:
+      type: string
+      enum:
+        - default
+        - NotoSansSC
+        - NotoSerifSC
+        - Montserrat
+        - Poppins
+        - PlayfairDisplay
+        - Roboto
+    value: null
+    nullable: true
+
   - group: Advanced Options
     collapsed: true
 
