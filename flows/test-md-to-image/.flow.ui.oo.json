@@ -1,0 +1,29 @@
+{
+  "nodes": {
+    "md-to-image#2": {
+      "rfNode": {
+        "position": {
+          "x": 0,
+          "y": 3.5
+        }
+      },
+      "sections": {
+        "inputs": {
+          "groupCollapsed": {
+            "Layout Options": true,
+            "Background Options": true,
+            "Advanced Options": true
+          }
+        }
+      }
+    },
+    "image_preview#2": {
+      "rfNode": {
+        "position": {
+          "x": 486,
+          "y": 0
+        }
+      }
+    }
+  }
+}

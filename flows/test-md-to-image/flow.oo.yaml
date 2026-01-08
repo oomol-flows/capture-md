@@ -1,0 +1,80 @@
+title: Test MD to Image
+description: Test the md-to-image block with various features
+
+nodes:
+  - node_id: md-to-image#2
+    title: "Markdown to Image #2"
+    inputs_from:
+      - handle: markdown_input
+        value: >
+          # Hello Markdown to Image
+
+
+          This is a **test** of the new styling with white card on gradient background.
+
+
+          ## Features
+
+
+          - Beautiful gradient background
+
+          - White content card with shadow
+
+          - Dynamic font sizing
+
+          - Offline resource support
+
+
+          :::card info
+
+          This is an info card with the new styling!
+
+          :::
+
+
+          ### Code Example
+
+
+          ```javascript
+
+          console.log("Hello World");
+
+          ```
+
+
+          > This is a blockquote with the new color scheme
+      - handle: output_path
+        value: null
+      - handle: export_mode
+        value: null
+      - handle: width
+        value: null
+      - handle: padding
+        value: null
+      - handle: font_size
+        value: null
+      - handle: background_preset
+        value: null
+      - handle: custom_bg_start
+        value: null
+      - handle: custom_bg_end
+        value: null
+      - handle: gradient_direction
+        value: null
+      - handle: scale
+        value: null
+      - handle: enable_math
+        value: null
+      - handle: enable_diagram
+        value: null
+      - handle: enable_card
+        value: null
+    task: self::md-to-image
+  - node_id: image_preview#2
+    title: "图片预览 #2"
+    inputs_from:
+      - handle: image_path
+        from_node:
+          - node_id: md-to-image#2
+            output_handle: image_path
+    task: oomol-preview::image_preview

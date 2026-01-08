@@ -1,0 +1,167 @@
+inputs_def:
+  - handle: markdown_input
+    description: "Markdown content or file path"
+    json_schema:
+      type: string
+      ui:widget: text
+    nullable: false
+
+  - handle: output_path
+    description: "Output image path"
+    json_schema:
+      type: string
+      ui:widget: save
+      ui:options:
+        filters:
+          - name: PNG
+            extensions:
+              - png
+        excludeAll: true
+    value: null
+    nullable: true
+
+  - group: Layout Options
+    collapsed: true
+
+  - handle: export_mode
+    description: "Export mode: free (auto height), xhs (3:4), pyq (1290:2796)"
+    json_schema:
+      type: string
+      enum:
+        - free
+        - xhs
+        - pyq
+    value: null
+    nullable: true
+
+  - handle: width
+    description: "Image width in pixels (default: 640)"
+    json_schema:
+      type: number
+    value: null
+    nullable: true
+
+  - handle: padding
+    description: "Padding in pixels (default: 40)"
+    json_schema:
+      type: number
+    value: null
+    nullable: true
+
+  - handle: font_size
+    description: "Base font size in pixels (default: 18)"
+    json_schema:
+      type: number
+    value: null
+    nullable: true
+
+  - group: Background Options
+    collapsed: true
+
+  - handle: background_preset
+    description: "Background gradient preset"
+    json_schema:
+      type: string
+      enum:
+        - purple
+        - pink
+        - blue
+        - green
+        - sunset
+        - pastel
+        - peach
+        - rose
+    value: null
+    nullable: true
+
+  - handle: custom_bg_start
+    description: "Custom background start color (overrides preset)"
+    json_schema:
+      type: string
+      ui:widget: color
+      ui:options:
+        colorType: HEX
+    value: null
+    nullable: true
+
+  - handle: custom_bg_end
+    description: "Custom background end color"
+    json_schema:
+      type: string
+      ui:widget: color
+      ui:options:
+        colorType: HEX
+    value: null
+    nullable: true
+
+  - handle: gradient_direction
+    description: "Gradient direction"
+    json_schema:
+      type: string
+      enum:
+        - "0deg"
+        - "45deg"
+        - "90deg"
+        - "135deg"
+        - "180deg"
+        - "270deg"
+    value: null
+    nullable: true
+
+  - group: Advanced Options
+    collapsed: true
+
+  - handle: scale
+    description: "Export scale factor for clarity (default: 3)"
+    json_schema:
+      type: number
+    value: null
+    nullable: true
+
+  - handle: enable_math
+    description: "Enable KaTeX math support (default: true)"
+    json_schema:
+      type: boolean
+    value: null
+    nullable: true
+
+  - handle: enable_diagram
+    description: "Enable Mermaid diagram support (default: true)"
+    json_schema:
+      type: boolean
+    value: null
+    nullable: true
+
+  - handle: enable_card
+    description: "Enable card syntax support (default: true)"
+    json_schema:
+      type: boolean
+    value: null
+    nullable: true
+
+outputs_def:
+  - handle: image_path
+    description: "Generated image file path"
+    json_schema:
+      type: string
+
+  - handle: image_width
+    description: "Generated image width"
+    json_schema:
+      type: number
+
+  - handle: image_height
+    description: "Generated image height"
+    json_schema:
+      type: number
+
+executor:
+  name: nodejs
+  options:
+    entry: index.ts
+    spawn: false
+
+title: "Markdown to Image"
+icon: ":carbon:image:"
+description: "Convert Markdown to beautiful images with support for math
+  formulas, diagrams, and custom styling"
