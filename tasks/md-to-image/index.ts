@@ -415,16 +415,16 @@ async function readMarkdownFile(filePath: string): Promise<string> {
   return content;
 }
 
-// Calculate target height based on export mode
-function calculateHeight(mode: string, width: number): number | null {
+// Calculate minimum height based on export mode (content can exceed this for long images)
+function calculateMinHeight(mode: string, width: number): number {
   switch (mode) {
     case "xhs":
-      return Math.round((width / 3) * 4);
+      return Math.round((width / 3) * 4); // 3:4 ratio
     case "pyq":
-      return Math.round(width * (2796 / 1290));
+      return Math.round(width * (2796 / 1290)); // WeChat Moments ratio
     case "free":
     default:
-      return null;
+      return 600; // Default minimum height
   }
 }
 
@@ -460,7 +460,7 @@ function generateHTML(
     padding: number;
     fontSize: number;
     background: string;
-    targetHeight: number | null;
+    minHeight: number;
     enableCard: boolean;
     enableMath: boolean;
     enableDiagram: boolean;
@@ -475,13 +475,11 @@ function generateHTML(
 
   const fontSizeVars = generateFontSizeVars(options.fontSize);
 
-  const posterHeightStyle = options.targetHeight
-    ? `height: ${options.targetHeight}px; min-height: ${options.targetHeight}px; overflow: hidden;`
-    : "min-height: 600px;";
+  // Use min-height to allow content to expand for long images
+  const posterHeightStyle = `min-height: ${options.minHeight}px;`;
 
-  const contentMaxHeightStyle = options.targetHeight
-    ? `max-height: ${options.targetHeight - options.padding * 2}px; overflow: hidden;`
-    : "";
+  // No max-height restriction - content can grow freely
+  const contentMaxHeightStyle = "";
 
   // Generate inline assets
   const inlineAssets: string[] = [];
@@ -678,8 +676,8 @@ export default async function (
     gfm: true,
   });
 
-  // Calculate target height
-  const targetHeight = calculateHeight(exportMode, width);
+  // Calculate minimum height based on export mode
+  const minHeight = calculateMinHeight(exportMode, width);
 
   // Load custom fonts - default to NotoSansSC for reliable Chinese rendering
   const DEFAULT_FONT = "NotoSansSC";
@@ -719,7 +717,7 @@ export default async function (
     padding,
     fontSize,
     background,
-    targetHeight,
+    minHeight,
     enableCard,
     enableMath,
     enableDiagram,

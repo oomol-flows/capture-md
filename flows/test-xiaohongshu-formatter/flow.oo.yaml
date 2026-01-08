@@ -64,6 +64,10 @@ nodes:
         value: null
       - handle: enable_card
         value: null
+      - handle: title_font
+        value:
+      - handle: body_font
+        value:
     task: self::md-to-image
   - node_id: image_preview#1
     title: "图片预览 #1"
