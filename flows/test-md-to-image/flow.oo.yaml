@@ -1,9 +1,9 @@
-title: Test MD to Image
-description: Test the md-to-image block with various features
+title: "%test-md-to-image%"
+description: "%test-the-md-to-image-block-with-various-features%"
 
 nodes:
   - node_id: md-to-image#2
-    title: "Markdown to Image #2"
+    title: "%markdown-to-image-2%"
     inputs_from:
       - handle: markdown_input
         value: >
@@ -75,7 +75,7 @@ nodes:
         value:
     task: self::md-to-image
   - node_id: image_preview#2
-    title: "图片预览 #2"
+    title: "%2%"
     inputs_from:
       - handle: image_path
         from_node:

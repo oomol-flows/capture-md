@@ -1,5 +1,5 @@
-title: Test Xiaohongshu Formatter
-description: Test flow to verify xiaohongshu-formatter task block
+title: "%test-xiaohongshu-formatter%"
+description: "%test-flow-to-verify-xiaohongshu-formatter-task-block%"
 nodes:
   - node_id: format#1
     task: self::xiaohongshu-formatter
@@ -32,7 +32,7 @@ nodes:
           top_p: 1
           max_tokens: 200000
   - node_id: md-to-image#1
-    title: "Markdown to Image #1"
+    title: "%markdown-to-image-1%"
     inputs_from:
       - handle: markdown_input
         from_node:
@@ -70,7 +70,7 @@ nodes:
         value:
     task: self::md-to-image
   - node_id: image_preview#1
-    title: "图片预览 #1"
+    title: "%1%"
     inputs_from:
       - handle: image_path
         from_node:
@@ -78,7 +78,7 @@ nodes:
             output_handle: image_path
     task: oomol-preview::image_preview
   - node_id: markdown_text_preview#1
-    title: "Markdown 预览 #1"
+    title: "%markdown-1%"
     inputs_from:
       - handle: text
         from_node:

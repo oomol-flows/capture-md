@@ -1,7 +1,8 @@
+name: md_to_image
+displayName: "%display-name%"
+description: "%description%"
 version: 0.0.1
 scripts:
-  # Script executed when the container is first loaded
-  # eg: bootstrap: poetry add pandas
   bootstrap: |
     npm install
     npx playwright install chromium
@@ -9,3 +10,6 @@ scripts:
     poetry install --no-root
 dependencies:
   oomol-preview: 0.2.0
+icon: ./icon.png
+repository: https://github.com/oomol-flows/md_to_image
+releaseNotes: init

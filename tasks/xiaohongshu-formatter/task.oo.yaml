@@ -1,6 +1,6 @@
 inputs_def:
   - handle: content
-    description: Input text content to format
+    description: "%input-text-content-to-format%"
     json_schema:
       type: string
       ui:widget: text
@@ -9,19 +9,19 @@ inputs_def:
   - group: Style Options
     collapsed: true
   - handle: add_emojis
-    description: Add emojis to enhance visual appeal
+    description: "%add-emojis-to-enhance-visual-appeal%"
     json_schema:
       type: boolean
     value: true
     nullable: true
   - handle: use_dividers
-    description: Add decorative dividers between sections
+    description: "%add-decorative-dividers-between-sections%"
     json_schema:
       type: boolean
     value: true
     nullable: true
   - handle: highlight_keywords
-    description: Highlight important keywords with formatting
+    description: "%highlight-important-keywords-with-formatting%"
     json_schema:
       type: boolean
     value: true
@@ -30,7 +30,7 @@ inputs_def:
   - group: LLM Configuration
     collapsed: false
   - handle: llm
-    description: "LLM model configuration for content formatting"
+    description: "%llm-model-configuration-for-content-formatting%"
     json_schema:
       ui:widget: llm::model
     value:
@@ -42,7 +42,7 @@ inputs_def:
 
 outputs_def:
   - handle: formatted_markdown
-    description: "Xiaohongshu-style formatted markdown content"
+    description: "%xiaohongshu-style-formatted-markdown-content%"
     json_schema:
       type: string
 
@@ -52,7 +52,6 @@ executor:
     entry: __init__.py
     spawn: false
 
-title: "Xiaohongshu Formatter"
+title: "%xiaohongshu-formatter%"
 icon: ":carbon:document-blank:"
-description: "Format text content into Xiaohongshu-style markdown with emojis,
-  dividers, and eye-catching layout"
+description: "%format-text-content-into-xiaohongshu-style-markdown-with-emojis%"
