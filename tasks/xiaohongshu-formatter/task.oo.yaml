@@ -1,0 +1,58 @@
+inputs_def:
+  - handle: content
+    description: Input text content to format
+    json_schema:
+      type: string
+      ui:widget: text
+    nullable: false
+
+  - group: Style Options
+    collapsed: true
+  - handle: add_emojis
+    description: Add emojis to enhance visual appeal
+    json_schema:
+      type: boolean
+    value: true
+    nullable: true
+  - handle: use_dividers
+    description: Add decorative dividers between sections
+    json_schema:
+      type: boolean
+    value: true
+    nullable: true
+  - handle: highlight_keywords
+    description: Highlight important keywords with formatting
+    json_schema:
+      type: boolean
+    value: true
+    nullable: true
+
+  - group: LLM Configuration
+    collapsed: false
+  - handle: llm
+    description: "LLM model configuration for content formatting"
+    json_schema:
+      ui:widget: llm::model
+    value:
+      model: oomol-chat
+      temperature: 0.5
+      top_p: 1
+      max_tokens: 200000
+    nullable: false
+
+outputs_def:
+  - handle: formatted_markdown
+    description: "Xiaohongshu-style formatted markdown content"
+    json_schema:
+      type: string
+
+executor:
+  name: python
+  options:
+    entry: __init__.py
+    spawn: false
+
+title: "Xiaohongshu Formatter"
+icon: ":carbon:document-blank:"
+description: "Format text content into Xiaohongshu-style markdown with emojis,
+  dividers, and eye-catching layout"

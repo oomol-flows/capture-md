@@ -1,0 +1,83 @@
+title: Test Xiaohongshu Formatter
+description: Test flow to verify xiaohongshu-formatter task block
+nodes:
+  - node_id: format#1
+    task: self::xiaohongshu-formatter
+    inputs_from:
+      - handle: content
+        value: |
+          今天分享一个超实用的工作效率提升方法！
+
+          我发现很多人在工作中都会遇到时间管理的问题。总是感觉时间不够用，任务做不完。
+
+          其实解决方法很简单：
+          1. 每天早上列出3个最重要的任务
+          2. 使用番茄工作法，25分钟专注工作，5分钟休息
+          3. 减少不必要的会议和打断
+          4. 学会说不，专注于真正重要的事情
+
+          坚持一周，你就会看到明显的效果。工作效率至少提升30%以上！
+
+          大家还有什么提升效率的好方法吗？欢迎在评论区分享！
+      - handle: add_emojis
+        value: true
+      - handle: use_dividers
+        value: true
+      - handle: highlight_keywords
+        value: true
+      - handle: llm
+        value:
+          model: oomol-chat
+          temperature: 0.5
+          top_p: 1
+          max_tokens: 200000
+  - node_id: md-to-image#1
+    title: "Markdown to Image #1"
+    inputs_from:
+      - handle: markdown_input
+        from_node:
+          - node_id: format#1
+            output_handle: formatted_markdown
+      - handle: output_path
+        value: null
+      - handle: export_mode
+        value: null
+      - handle: width
+        value: null
+      - handle: padding
+        value: null
+      - handle: font_size
+        value: null
+      - handle: background_preset
+        value: null
+      - handle: custom_bg_start
+        value: null
+      - handle: custom_bg_end
+        value: null
+      - handle: gradient_direction
+        value: null
+      - handle: scale
+        value: null
+      - handle: enable_math
+        value: null
+      - handle: enable_diagram
+        value: null
+      - handle: enable_card
+        value: null
+    task: self::md-to-image
+  - node_id: image_preview#1
+    title: "图片预览 #1"
+    inputs_from:
+      - handle: image_path
+        from_node:
+          - node_id: md-to-image#1
+            output_handle: image_path
+    task: oomol-preview::image_preview
+  - node_id: markdown_text_preview#1
+    title: "Markdown 预览 #1"
+    inputs_from:
+      - handle: text
+        from_node:
+          - node_id: format#1
+            output_handle: formatted_markdown
+    task: oomol-preview::markdown_text_preview
